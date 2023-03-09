@@ -1,10 +1,10 @@
 import { useState } from "react"
 import styled from "styled-components"
 
-export default function Seats({seat, available, setSelectedSeats, selectedseats, id}){
+export default function Seats({seat, available, setSelectedSeats, selectedseats, id, setInformations, informations}){
     const [yourSeat, setYourSeat] = useState(false)
     return(
-        <SeatItem onClick={()=>select()} yourSeat={yourSeat}available={available}>{seat}</SeatItem>
+        <SeatItem data-test="seat" onClick={()=>select()} yourSeat={yourSeat}available={available}>{seat}</SeatItem>
     )
     function select(){
         if(available===false){
@@ -12,11 +12,14 @@ export default function Seats({seat, available, setSelectedSeats, selectedseats,
         }
         setYourSeat(!yourSeat)
         if(!selectedseats.ids.includes(id)){
+            setInformations({...informations, seats:[...informations.seats, seat].sort()})
             setSelectedSeats({...selectedseats, ids:[...selectedseats.ids, id]})
         }
         if(selectedseats.ids.includes(id)){
-            const a = selectedseats.ids.filter((a)=>a!==id)
-            setSelectedSeats({...selectedseats, ids:a})
+            const newArray = selectedseats.ids.filter((a)=>a!==id)
+            const filterSeats = informations.seats.filter((a)=>a!==seat)
+            setInformations({...informations, seats:filterSeats.sort()})
+            setSelectedSeats({...selectedseats, ids:newArray})
         }
 
     }

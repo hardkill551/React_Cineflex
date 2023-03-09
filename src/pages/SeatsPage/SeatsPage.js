@@ -4,27 +4,30 @@ import { Link, useParams } from "react-router-dom"
 import {PageContainer, SeatsContainer, CaptionContainer, CaptionItem, CaptionCircle, FormContainer, FooterContainer} from "./styled.js"
 import Seats from "../../components/Seats"
 
-export default function SeatsPage() {
+export default function SeatsPage({setInformations, informations}) {
     const parameters = useParams()
     const [seat, setSeat]=useState([])
     const [seats, setSeats]=useState([])
     const [selectedseats, setSelectedSeats] = useState({ids:[], name:"", cpf:""})
-    const [nextPage, setNextPage] = useState(false)
+    console.log(informations)
+
     useEffect(()=>{
+        window.scrollTo(0, 0)
+        setInformations({seats:[]})
         const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${parameters.idSessao}/seats`)
         promise.then(res=> {
             setSeats(res.data)
             setSeat(res.data.seats)
         })
         promise.catch(err=> console.log(err.response.data))
-    
     },[])
+
     return (
         <PageContainer>
             Selecione o(s) assento(s)
 
             <SeatsContainer>
-                {seat.map(s=> <Seats key={s.id} selectedseats={selectedseats}setSelectedSeats={setSelectedSeats} id={s.id} seat={s.name} available={s.isAvailable}/>)}
+                {seat.map(s=> <Seats key={s.id} setInformations={setInformations} informations={informations} selectedseats={selectedseats} setSelectedSeats={setSelectedSeats} id={s.id} seat={s.name} available={s.isAvailable}/>)}
             </SeatsContainer>
 
             <CaptionContainer>
@@ -44,16 +47,24 @@ export default function SeatsPage() {
 
             <FormContainer>
                 Nome do Comprador:
-                <input value={selectedseats.name}onChange={e=>setSelectedSeats({...selectedseats, name:e.target.value})}placeholder="Digite seu nome..." />
+                <input data-test="client-name" value={selectedseats.name} onChange={e=>{
+                    setSelectedSeats({...selectedseats, name:e.target.value})
+                    setInformations({...informations, namePerson:e.target.value})
+                }
+                }placeholder="Digite seu nome..." />
 
                 CPF do Comprador:
-                <input value={selectedseats.cpf} onChange={e=>setSelectedSeats({...selectedseats, cpf:e.target.value})} placeholder="Digite seu CPF..." />
+                <input data-test="client-cpf" value={selectedseats.cpf} onChange={e=>{
+                    setSelectedSeats({...selectedseats, cpf:e.target.value})
+                    setInformations({...informations, cpf:e.target.value})
+                }} placeholder="Digite seu CPF..." />
+                    
                 <Link to="/sucesso">
-                <button onClick={()=>post()}>Reservar Assento(s)</button>
+                <button data-test="book-seat-btn" onClick={()=>post()}>Reservar Assento(s)</button>
                 </Link>
             </FormContainer>
             {seats.movie!==undefined?
-            <FooterContainer>
+            <FooterContainer data-test="footer">
                 <div>
                     <img src={seats.movie.posterURL} alt={seats.movie.title} />
                 </div>
@@ -71,8 +82,9 @@ export default function SeatsPage() {
     )
 
     function post(){
+        setInformations({...informations, name:seats.movie.title, date:seats.day.date, time:seats.name})
         const promise = axios.post("https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many", selectedseats)
-        promise.then(() => console.log("Deu certo"))
+        promise.then(() => setSelectedSeats({ids:[], name:"", cpf:""}))
         promise.catch(() => console.log("Deu erro"))
     }
 }

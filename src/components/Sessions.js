@@ -3,13 +3,13 @@ import styled from "styled-components"
 
 export default function Sessions({weekday, date, time}){
     return (
-        <SessionContainer>
+        <SessionContainer data-test="movie-day">
         {weekday} - {date}
         
         <ButtonsContainer>
         {time.map(h => 
         <Link key={h.id} to={`/assentos/${h.id}`}>
-            <button>{h.name}</button>
+            <button data-test="showtime">{h.name}</button>
         </Link>
         )}
         </ButtonsContainer>
