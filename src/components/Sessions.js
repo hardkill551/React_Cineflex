@@ -8,8 +8,8 @@ export default function Sessions({weekday, date, time}){
         
         <ButtonsContainer>
         {time.map(h => 
-        <Link to={`/assentos/${h.id}`}>
-            <button key={h.id}>{h.name}</button>
+        <Link key={h.id} to={`/assentos/${h.id}`}>
+            <button>{h.name}</button>
         </Link>
         )}
         </ButtonsContainer>

@@ -8,7 +8,6 @@ export default function SessionsPage() {
     const parameters = useParams()
     const [session, setSession] = useState([])
     const [days, setDays] = useState([])
-    console.log(session)
      
     useEffect(()=>{
         const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/movies/${parameters.idFilme}/showtimes`)

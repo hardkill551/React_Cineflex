@@ -18,6 +18,9 @@ const GlobalStyle = createGlobalStyle`
 			background-color: lightgray;
 		}
 	}
+	a{
+		text-decoration:none;
+	}
 	input {
 		background: #FFFFFF;
 		border: 1px solid #D5D5D5;
