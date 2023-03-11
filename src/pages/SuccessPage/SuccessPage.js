@@ -3,7 +3,6 @@ import styled from "styled-components"
 
 export default function SuccessPage({informations}) {
     window.scrollTo(0, 0)
-    console.log(informations)
     return (
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>

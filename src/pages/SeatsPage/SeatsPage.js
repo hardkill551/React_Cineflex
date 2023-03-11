@@ -1,15 +1,15 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import {PageContainer, SeatsContainer, CaptionContainer, CaptionItem, CaptionCircle, FormContainer, FooterContainer} from "./styled.js"
 import Seats from "../../components/Seats"
 
 export default function SeatsPage({setInformations, informations}) {
     const parameters = useParams()
+    const navigate = useNavigate()
     const [seat, setSeat]=useState([])
     const [seats, setSeats]=useState([])
     const [selectedseats, setSelectedSeats] = useState({ids:[], name:"", cpf:""})
-    console.log(informations)
 
     useEffect(()=>{
         window.scrollTo(0, 0)
@@ -45,23 +45,21 @@ export default function SeatsPage({setInformations, informations}) {
                 </CaptionItem>
             </CaptionContainer>
 
-            <FormContainer>
-                Nome do Comprador:
-                <input data-test="client-name" value={selectedseats.name} onChange={e=>{
+            <FormContainer onSubmit={post}>
+                <label htmlFor="name">Nome do Comprador:</label>
+                <input id="name" type="text" required data-test="client-name" value={selectedseats.name} onChange={e=>{
                     setSelectedSeats({...selectedseats, name:e.target.value})
                     setInformations({...informations, namePerson:e.target.value})
                 }
                 }placeholder="Digite seu nome..." />
 
-                CPF do Comprador:
-                <input data-test="client-cpf" value={selectedseats.cpf} onChange={e=>{
+                <label htmlFor="cpf">CPF do Comprador:</label>
+                <input id="cpf" type="number" required data-test="client-cpf" value={selectedseats.cpf} onChange={e=>{
                     setSelectedSeats({...selectedseats, cpf:e.target.value})
                     setInformations({...informations, cpf:e.target.value})
                 }} placeholder="Digite seu CPF..." />
                     
-                <Link to="/sucesso">
-                <button data-test="book-seat-btn" onClick={()=>post()}>Reservar Assento(s)</button>
-                </Link>
+                <button type="submit" data-test="book-seat-btn">Reservar Assento(s)</button>
             </FormContainer>
             {seats.movie!==undefined?
             <FooterContainer data-test="footer">
@@ -81,11 +79,15 @@ export default function SeatsPage({setInformations, informations}) {
         </PageContainer>
     )
 
-    function post(){
+    function post(e){
+        e.preventDefault()
         setInformations({...informations, name:seats.movie.title, date:seats.day.date, time:seats.name})
         const promise = axios.post("https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many", selectedseats)
-        promise.then(() => setSelectedSeats({ids:[], name:"", cpf:""}))
-        promise.catch(() => console.log("Deu erro"))
+        promise.then(() => {
+            setSelectedSeats({ids:[], name:"", cpf:""})
+            navigate("/sucesso")
+            })
+        promise.catch(() => alert("não conseguimos comprar os assentos"))
     }
 }
 
